@@ -103,7 +103,7 @@ public class CameraManager {
                     imageAnalyzer
             );
             preview.setSurfaceProvider(
-                    finderView.createSurfaceProvider()
+                    finderView.getSurfaceProvider()
             );
         } catch (Exception e) {
             Log.e(TAG, "Use case binding failed", e);

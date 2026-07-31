@@ -4,7 +4,7 @@ import android.content.Context
 import android.graphics.PointF
 import android.util.DisplayMetrics
 import android.util.Log
-import com.google.ar.sceneform.math.Vector3
+import com.facedetection.math.Vector3
 import com.google.mlkit.vision.face.Face
 import com.google.mlkit.vision.face.FaceLandmark
 import kotlin.math.abs

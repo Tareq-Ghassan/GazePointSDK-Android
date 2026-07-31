@@ -1,7 +1,5 @@
 package com.facedetection.face_detection;
 
-import static androidx.camera.core.CameraX.getContext;
-
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.PointF;
@@ -17,7 +15,7 @@ import com.facedetection.camerax.GraphicOverlay;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.ar.sceneform.math.Vector3;
+import com.facedetection.math.Vector3;
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.face.Face;
 import com.google.mlkit.vision.face.FaceDetection;
@@ -47,6 +45,7 @@ public class FaceContourDetectionProcessor extends BaseImageAnalyzer<List<Face>>
      */
     public FaceContourDetectionProcessor(GraphicOverlay view, GazeViewModel viewModel) {
         this.view = view;
+        this.context = view.getContext();
         this.viewModel = viewModel;
         this.realTimeOpts = new FaceDetectorOptions.Builder()
                 .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_FAST)
@@ -161,20 +160,18 @@ public class FaceContourDetectionProcessor extends BaseImageAnalyzer<List<Face>>
         );
 
         // Normalize the gaze vector
-        gazeVector.normalized();
-
-        return gazeVector;
+        return gazeVector.normalized();
     }
 
     private PointF mapGazeVectorToScreenCoordinates(Vector3 gazeVector) {
 
         // Get screen dimensions
-        DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         int screenWidth = displayMetrics.widthPixels;
         int screenHeight = displayMetrics.heightPixels;
 
         // Adjust the gaze vector based on the screen orientation
-        int screenOrientation = getContext().getResources().getConfiguration().orientation;
+        int screenOrientation = context.getResources().getConfiguration().orientation;
         if (screenOrientation == Configuration.ORIENTATION_LANDSCAPE) {
             gazeVector = new Vector3(gazeVector.y, gazeVector.x, -gazeVector.z);
         }
@@ -188,7 +185,7 @@ public class FaceContourDetectionProcessor extends BaseImageAnalyzer<List<Face>>
 
     private PointF calculateGazePoint(PointF mappedGazeVector) {
         // Get screen dimensions
-        DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         int screenWidth = displayMetrics.widthPixels;
         int screenHeight = displayMetrics.heightPixels;
 
