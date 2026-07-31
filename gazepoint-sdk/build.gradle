@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
+    id 'maven-publish'
 }
 
 android {
@@ -51,4 +52,17 @@ dependencies {
     api 'com.google.mlkit:face-detection:16.1.7'
 
     testImplementation 'junit:junit:4.13.2'
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+                groupId = 'com.github.Tareq-Ghassan'
+                artifactId = 'GazePointSDK-Android'
+                version = android.defaultConfig.versionName
+            }
+        }
+    }
 }

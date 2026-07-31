@@ -1,6 +1,9 @@
 # GazePoint SDK for Android
 
-Advanced eye tracking and gaze point detection SDK for Android applications using Google ML Kit and advanced computer vision algorithms.
+Advanced eye tracking and gaze point detection SDK for Android applications using Google ML Kit.
+
+**Repository:** [Tareq-Ghassan/GazePointSDK-Android](https://github.com/Tareq-Ghassan/GazePointSDK-Android)  
+**Umbrella monorepo:** [FaceDetection-GazePoint](https://github.com/Tareq-Ghassan/FaceDetection-GazePoint)
 
 ## Features
 
@@ -14,7 +17,7 @@ Advanced eye tracking and gaze point detection SDK for Android applications usin
 
 ## Requirements
 
-- Android 24+ (Android 7.0)
+- Android API 24+ (Android 7.0)
 - Kotlin / Java host app
 - Device with a front-facing camera
 - Camera permission
@@ -39,6 +42,25 @@ dependencies {
 ```
 
 See the [`android_example`](../android_example) sample for a complete host app.
+
+### JitPack (after tagging a release)
+
+1. Push `main` and tag `2.0.0` on [GazePointSDK-Android](https://github.com/Tareq-Ghassan/GazePointSDK-Android)
+2. Open [jitpack.io/#Tareq-Ghassan/GazePointSDK-Android](https://jitpack.io/#Tareq-Ghassan/GazePointSDK-Android) and build the tag
+3. Consume:
+
+```gradle
+// settings.gradle / dependencyResolutionManagement
+repositories {
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    implementation 'com.github.Tareq-Ghassan:GazePointSDK-Android:2.0.0'
+}
+```
+
+This repo includes `jitpack.yml` + `maven-publish` on `:gazepoint-sdk` so JitPack can build the library module.
 
 ## Quick Start
 
@@ -96,4 +118,9 @@ Open [`android_example`](../android_example) in Android Studio. It depends on th
 
 ## License
 
-MIT License — see LICENSE file for details.
+MIT License — see the [LICENSE](https://github.com/Tareq-Ghassan/FaceDetection-GazePoint/blob/main/LICENSE) file.
+
+## Support
+
+- Issues: [GazePointSDK-Android](https://github.com/Tareq-Ghassan/GazePointSDK-Android/issues)
+- Umbrella: [FaceDetection-GazePoint](https://github.com/Tareq-Ghassan/FaceDetection-GazePoint/issues)
