@@ -12,5 +12,5 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "faceDetection"
-include ':app'
+rootProject.name = "GazePointSDK"
+include ':gazepoint-sdk'
