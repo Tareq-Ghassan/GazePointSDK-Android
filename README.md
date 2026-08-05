@@ -45,7 +45,7 @@ See the [`android_example`](../android_example) sample for a complete host app.
 
 ### JitPack (after tagging a release)
 
-1. Push `main` and tag `2.0.0` on [GazePointSDK-Android](https://github.com/Tareq-Ghassan/GazePointSDK-Android)
+1. Push `main` and tag `2.1.0` on [GazePointSDK-Android](https://github.com/Tareq-Ghassan/GazePointSDK-Android)
 2. Open [jitpack.io/#Tareq-Ghassan/GazePointSDK-Android](https://jitpack.io/#Tareq-Ghassan/GazePointSDK-Android) and build the tag
 3. Consume:
 
@@ -56,7 +56,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.Tareq-Ghassan:GazePointSDK-Android:2.0.0'
+    implementation 'com.github.Tareq-Ghassan:GazePointSDK-Android:2.1.0'
 }
 ```
 
