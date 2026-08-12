@@ -52,6 +52,8 @@ dependencies {
 
 This repo includes `jitpack.yml` + `maven-publish` on `:gazepoint-sdk` so JitPack can build the library module.
 
+Use tag **2.1.1**. JitPack status for `2.1.0` is `Error` (no POM/AAR). Flutter `gazepoint_sdk` 3.0.4+ depends on 2.1.1.
+
 ## Quick Start
 
 ### 1. Camera permission
