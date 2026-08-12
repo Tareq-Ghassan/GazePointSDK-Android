@@ -24,24 +24,14 @@ Advanced eye tracking and gaze point detection SDK for Android applications usin
 
 ## Installation
 
-### Local module (recommended while developing)
+### Local module (this repository)
 
-In your app's `settings.gradle`:
+This repo is already a Gradle project. Open [`example/`](example/) in Android Studio to run the demo. External apps should use JitPack (below) or:
 
 ```gradle
 include ':gazepoint-sdk'
-project(':gazepoint-sdk').projectDir = new File(settingsDir, '../android/gazepoint-sdk')
+project(':gazepoint-sdk').projectDir = new File(settingsDir, '../gazepoint-sdk')
 ```
-
-In your app's `build.gradle`:
-
-```gradle
-dependencies {
-    implementation project(':gazepoint-sdk')
-}
-```
-
-See the [`android_example`](../android_example) sample for a complete host app.
 
 ### JitPack (after tagging a release)
 
@@ -114,7 +104,7 @@ val metrics = monitor.getMetrics()
 
 ## Sample app
 
-Open [`android_example`](../android_example) in Android Studio. It depends on this library via a local Gradle project reference (same idea as `ios_example` → `ios`).
+Open [`example`](example/) in Android Studio.
 
 ## License
 
