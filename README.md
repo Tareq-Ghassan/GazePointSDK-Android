@@ -35,7 +35,7 @@ project(':gazepoint-sdk').projectDir = new File(settingsDir, '../gazepoint-sdk')
 
 ### JitPack (after tagging a release)
 
-1. Push `main` and tag `2.1.0` on [GazePointSDK-Android](https://github.com/Tareq-Ghassan/GazePointSDK-Android)
+1. Push `main` and tag `2.1.1` on [GazePointSDK-Android](https://github.com/Tareq-Ghassan/GazePointSDK-Android)
 2. Open [jitpack.io/#Tareq-Ghassan/GazePointSDK-Android](https://jitpack.io/#Tareq-Ghassan/GazePointSDK-Android) and build the tag
 3. Consume:
 
@@ -46,7 +46,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.Tareq-Ghassan:GazePointSDK-Android:2.1.0'
+    implementation 'com.github.Tareq-Ghassan:GazePointSDK-Android:2.1.1'
 }
 ```
 
@@ -104,7 +104,9 @@ val metrics = monitor.getMetrics()
 
 ## Sample app
 
-Open [`example`](example/) in Android Studio.
+Open [`example`](example/) in Android Studio (or `cd example && ./gradlew :app:assembleDebug`).
+
+Pass: camera preview, moving gaze indicator, confidence > 0, blink flag. See [TESTING.md](https://github.com/Tareq-Ghassan/FaceDetection-GazePoint/blob/main/TESTING.md).
 
 ## License
 
