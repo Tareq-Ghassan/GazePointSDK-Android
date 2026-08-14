@@ -3,6 +3,7 @@ name: Release Android SDK
 # Tag this repo to publish. Flutter / iOS / other SDKs are not involved.
 #   git tag 2.1.1 && git push origin 2.1.1
 # JitPack artifact: com.github.Tareq-Ghassan:GazePointSDK-Android:<tag>
+# Also creates the GitHub Release (sidebar Latest). A tag alone does not.
 
 on:
   push:
@@ -11,6 +12,17 @@ on:
       - '[0-9]+.[0-9]+.[0-9]+'
 
 jobs:
+  github-release:
+    name: GitHub Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+
   build:
     name: Assemble library
     runs-on: ubuntu-latest

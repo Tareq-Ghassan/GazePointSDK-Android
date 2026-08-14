@@ -38,7 +38,7 @@ project(':gazepoint-sdk').projectDir = new File(settingsDir, '../gazepoint-sdk')
 
 ### JitPack (after tagging a release)
 
-1. Push `main` and tag `2.2.0` on [GazePointSDK-Android](https://github.com/Tareq-Ghassan/GazePointSDK-Android)
+1. Push `main` and tag `2.2.0` on [GazePointSDK-Android](https://github.com/Tareq-Ghassan/GazePointSDK-Android). The tag workflow creates the GitHub Release (sidebar **Latest**); a tag alone does not.
 2. Open [jitpack.io/#Tareq-Ghassan/GazePointSDK-Android](https://jitpack.io/#Tareq-Ghassan/GazePointSDK-Android) and build the tag
 3. Consume:
 
