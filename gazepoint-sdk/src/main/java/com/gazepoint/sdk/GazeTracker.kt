@@ -3,7 +3,6 @@ package com.gazepoint.sdk
 import android.content.Context
 import android.graphics.PointF
 import android.util.Log
-import com.gazepoint.sdk.math.Vector3
 import com.google.mlkit.vision.face.Face
 import com.google.mlkit.vision.face.FaceLandmark
 import kotlin.math.abs
@@ -57,8 +56,13 @@ class GazeTracker(private val context: Context) {
 
     /**
      * Calculate gaze point from a detected ML Kit [Face].
+     * Call only when exactly one face is in frame.
      */
-    fun calculateGazePoint(face: Face): GazeResult? {
+    fun calculateGazePoint(
+        face: Face,
+        previewWidth: Float = 0f,
+        previewHeight: Float = 0f
+    ): GazeResult? {
         val leftEyeLandmark = face.getLandmark(FaceLandmark.LEFT_EYE)
         val rightEyeLandmark = face.getLandmark(FaceLandmark.RIGHT_EYE)
 
@@ -72,16 +76,21 @@ class GazeTracker(private val context: Context) {
 
         blinkDetected = detectBlink(face)
         val headPose = calculateHeadPose(face)
-        val gazeVector = calculateGazeVector(leftEyePosition, rightEyePosition, headPose)
-
-        val calibratedVector = if (isCalibrated && calibrationData != null) {
-            applyCalibration(gazeVector, calibrationData!!)
+        val screenPoint = mapHeadPoseToPreview(
+            headPose = headPose,
+            previewWidth = previewWidth,
+            previewHeight = previewHeight
+        )
+        val calibrated = if (isCalibrated && calibrationData != null) {
+            PointF(
+                screenPoint.x * calibrationData!!.scaleX + calibrationData!!.offsetX,
+                screenPoint.y * calibrationData!!.scaleY + calibrationData!!.offsetY
+            )
         } else {
-            gazeVector
+            screenPoint
         }
 
-        val screenPoint = mapGazeVectorToScreenCoordinates(calibratedVector, headPose)
-        val filteredPoint = kalmanFilter.update(screenPoint)
+        val filteredPoint = kalmanFilter.update(calibrated)
         val smoothedPoint = applyAdaptiveSmoothing(filteredPoint)
         val confidence = calculateConfidence(face, leftEyePosition, rightEyePosition)
 
@@ -93,29 +102,6 @@ class GazeTracker(private val context: Context) {
             isBlinking = blinkDetected,
             headPose = headPose
         )
-    }
-
-    private fun calculateGazeVector(
-        leftEyePosition: PointF,
-        rightEyePosition: PointF,
-        headPose: HeadPose
-    ): Vector3 {
-        val baseVector = Vector3(
-            rightEyePosition.x - leftEyePosition.x,
-            rightEyePosition.y - leftEyePosition.y,
-            0f
-        )
-
-        val compensatedX = baseVector.x + headPose.yaw * 0.5f
-        val compensatedY = baseVector.y + headPose.pitch * 0.5f
-        val gazeVector = Vector3(compensatedX, compensatedY, 0f)
-
-        val magnitude = sqrt(gazeVector.x * gazeVector.x + gazeVector.y * gazeVector.y)
-        if (magnitude > 0) {
-            return Vector3(gazeVector.x / magnitude, gazeVector.y / magnitude, 0f)
-        }
-
-        return gazeVector
     }
 
     private fun calculateHeadPose(face: Face): HeadPose {
@@ -133,32 +119,20 @@ class GazeTracker(private val context: Context) {
         return avgEyeOpen < BLINK_EAR_THRESHOLD
     }
 
-    private fun mapGazeVectorToScreenCoordinates(
-        gazeVector: Vector3,
-        headPose: HeadPose
+    private fun mapHeadPoseToPreview(
+        headPose: HeadPose,
+        previewWidth: Float,
+        previewHeight: Float
     ): PointF {
-        val displayMetrics = context.resources.displayMetrics
-        val screenWidth = displayMetrics.widthPixels.toFloat()
-        val screenHeight = displayMetrics.heightPixels.toFloat()
+        val metrics = context.resources.displayMetrics
+        val width = if (previewWidth > 1f) previewWidth else metrics.widthPixels.toFloat()
+        val height = if (previewHeight > 1f) previewHeight else metrics.heightPixels.toFloat()
 
-        val yawFactor = 1f + (abs(headPose.yaw) / 30f) * 0.2f
-        val pitchFactor = 1f + (abs(headPose.pitch) / 30f) * 0.2f
-
-        val screenX = (screenWidth / 2f) + (gazeVector.x * (screenWidth / 2f) * yawFactor)
-        val screenY = (screenHeight / 2f) - (gazeVector.y * (screenHeight / 2f) * pitchFactor)
-
-        return PointF(
-            screenX.coerceIn(0f, screenWidth),
-            screenY.coerceIn(0f, screenHeight)
-        )
-    }
-
-    private fun applyCalibration(gazeVector: Vector3, calibration: CalibrationData): Vector3 {
-        return Vector3(
-            gazeVector.x * calibration.scaleX + calibration.offsetX,
-            gazeVector.y * calibration.scaleY + calibration.offsetY,
-            gazeVector.z
-        )
+        // ML Kit: yaw > 0 when the face looks toward the camera's right.
+        // Looking at the camera (0, 0) maps to the preview center.
+        val nx = (0.5f + headPose.yaw / 50f).coerceIn(0.05f, 0.95f)
+        val ny = (0.5f - headPose.pitch / 40f).coerceIn(0.05f, 0.95f)
+        return PointF(nx * width, ny * height)
     }
 
     private fun applyAdaptiveSmoothing(currentPoint: PointF): PointF {

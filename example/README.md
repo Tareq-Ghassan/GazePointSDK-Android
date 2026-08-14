@@ -22,10 +22,13 @@ From the command line (inside `example/`):
 
 ## What it shows
 
-- Live front-camera preview (CameraX)
-- Face bounding box overlay
-- Gaze indicator from `GazeTracker`
-- Confidence, blink, and head pose
+- Live camera preview from the SDK (`GazePreviewView`)
+- White outline on every detected face, aligned to the face
+- Status **Multiple faces detected** when more than one face is in frame (gaze is not calculated in that case)
+- **Flip camera** (front / back)
+- Gaze indicator, confidence, blink, and head pose from `GazeCamera`
+
+Metrics-only apps can use `GazeCamera` with `previewEnabled = false` and never attach a preview view.
 
 ## Requirements
 
@@ -33,4 +36,4 @@ From the command line (inside `example/`):
 - Device or emulator, API 24+
 - Camera permission (requested at runtime)
 
-Releasing the Android SDK does **not** require changes in Flutter or other platform repos. Tag this repository (for example `2.1.1`) and JitPack builds `com.github.Tareq-Ghassan:GazePointSDK-Android`.
+Releasing the Android SDK does **not** require changes in Flutter or other platform repos. Tag this repository (for example `2.2.0`) and JitPack builds `com.github.Tareq-Ghassan:GazePointSDK-Android`.

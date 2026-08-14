@@ -9,24 +9,25 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
-import com.gazepoint.example.camerax.CameraManager
 import com.gazepoint.example.databinding.ActivityMainBinding
 import com.gazepoint.sdk.GazePointSDK
+import com.gazepoint.sdk.camera.GazeCamera
+import com.gazepoint.sdk.camera.GazeCameraOptions
 
 /**
- * Demo host app for GazePoint SDK — mirrors ios_example.
+ * Demo host — camera preview, face boxes, and status come from the SDK.
  */
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var viewModel: GazeViewModel
-    private lateinit var cameraManager: CameraManager
+    private lateinit var gazeCamera: GazeCamera
 
     private val permissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { granted ->
         if (granted) {
-            cameraManager.startCamera()
+            gazeCamera.start(this)
         } else {
             Toast.makeText(this, "Camera permission is required", Toast.LENGTH_LONG).show()
             finish()
@@ -41,27 +42,28 @@ class MainActivity : AppCompatActivity() {
         GazePointSDK.printInfo()
 
         viewModel = ViewModelProvider(this)[GazeViewModel::class.java]
-        cameraManager = CameraManager(
-            context = this,
-            previewView = binding.previewView,
-            lifecycleOwner = this,
-            graphicOverlay = binding.graphicOverlay,
-            viewModel = viewModel
-        )
+        gazeCamera = GazeCamera(this) { frame ->
+            viewModel.applyFrame(frame)
+        }
+        gazeCamera.configure(GazeCameraOptions(previewEnabled = true, showFaceBoxes = true))
+        gazeCamera.attachPreview(binding.gazePreview)
 
-        binding.btnSwitch.setOnClickListener { cameraManager.changeCameraSelector() }
+        binding.btnSwitch.setOnClickListener { gazeCamera.switchCamera() }
 
         viewModel.uiState.observe(this) { state ->
             binding.statusText.text = state.statusText
             binding.statusText.setTextColor(
                 ContextCompat.getColor(
                     this,
-                    if (state.faceDetected) android.R.color.holo_green_light
-                    else android.R.color.holo_orange_light
+                    if (state.faceDetected && !state.statusText.startsWith("Multiple")) {
+                        android.R.color.holo_green_light
+                    } else {
+                        android.R.color.holo_orange_light
+                    }
                 )
             )
 
-            if (state.faceDetected && state.gazePoint != null) {
+            if (state.gazePoint != null && state.faceDetected) {
                 val point = state.gazePoint
                 binding.gazePointText.text = getString(
                     R.string.gaze_detail_format,
@@ -84,8 +86,12 @@ class MainActivity : AppCompatActivity() {
                     binding.gazeIndicator.y = point.y - halfH
                 }
             } else {
-                binding.gazePointText.text = getString(R.string.gaze_point_placeholder)
-                binding.headPoseText.text = getString(R.string.point_camera_hint)
+                binding.gazePointText.text = if (state.faceDetected) {
+                    "Gaze is only calculated when one face is in frame."
+                } else {
+                    getString(R.string.gaze_point_placeholder)
+                }
+                binding.headPoseText.text = if (state.faceDetected) "" else getString(R.string.point_camera_hint)
                 binding.gazeIndicator.visibility = View.GONE
             }
         }
@@ -96,15 +102,15 @@ class MainActivity : AppCompatActivity() {
     private fun checkCameraPermission() {
         when {
             ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                    == PackageManager.PERMISSION_GRANTED -> cameraManager.startCamera()
+                    == PackageManager.PERMISSION_GRANTED -> gazeCamera.start(this)
             else -> permissionLauncher.launch(Manifest.permission.CAMERA)
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        if (::cameraManager.isInitialized) {
-            cameraManager.shutdown()
+        if (::gazeCamera.isInitialized) {
+            gazeCamera.dispose()
         }
     }
 }

@@ -38,7 +38,7 @@ package com.gazepoint.sdk
  */
 object GazePointSDK {
     /** Current version of the SDK */
-    const val VERSION = "2.1.0"
+    const val VERSION = "2.2.0"
 
     /** Build number */
     const val BUILD = "1"

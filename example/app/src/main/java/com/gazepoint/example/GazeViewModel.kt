@@ -4,10 +4,10 @@ import android.graphics.PointF
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.gazepoint.sdk.GazeTracker
+import com.gazepoint.sdk.camera.GazeFrame
 
 /**
- * Holds the latest gaze tracking result for the demo UI.
+ * Holds the latest [GazeFrame] from the SDK for the demo UI.
  */
 class GazeViewModel : ViewModel() {
 
@@ -25,27 +25,18 @@ class GazeViewModel : ViewModel() {
     private val _uiState = MutableLiveData(UiState())
     val uiState: LiveData<UiState> = _uiState
 
-    fun applyResult(result: GazeTracker.GazeResult?) {
-        if (result == null) {
-            _uiState.postValue(
-                UiState(
-                    faceDetected = false,
-                    statusText = "No face detected"
-                )
-            )
-            return
-        }
-
+    fun applyFrame(frame: GazeFrame) {
+        val gaze = frame.gaze
         _uiState.postValue(
             UiState(
-                faceDetected = true,
-                statusText = if (result.isBlinking) "Blink detected" else "Tracking",
-                gazePoint = result.gazePoint,
-                confidence = result.confidence,
-                isBlinking = result.isBlinking,
-                pitch = result.headPose.pitch,
-                yaw = result.headPose.yaw,
-                roll = result.headPose.roll
+                faceDetected = frame.faceDetected,
+                statusText = frame.statusText,
+                gazePoint = gaze?.gazePoint,
+                confidence = gaze?.confidence ?: 0f,
+                isBlinking = gaze?.isBlinking ?: false,
+                pitch = gaze?.headPose?.pitch ?: 0f,
+                yaw = gaze?.headPose?.yaw ?: 0f,
+                roll = gaze?.headPose?.roll ?: 0f
             )
         )
     }
